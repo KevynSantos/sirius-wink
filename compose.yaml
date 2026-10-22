@@ -1,0 +1,18 @@
+name: sirius-wink
+services:
+  app:
+    build: .
+    container_name: sirius-wink
+    ports:
+      - "127.0.0.1:${APP_PORT:-8080}:80"
+    environment:
+      TZ: America/Sao_Paulo
+      ADMIN_NAME: ${ADMIN_NAME:-Administrador}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@sirius.local}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-SiriusWink@2026}
+      COOKIE_SECURE: ${COOKIE_SECURE:-0}
+    volumes:
+      - sirius-data:/var/www/data
+    restart: unless-stopped
+volumes:
+  sirius-data:
