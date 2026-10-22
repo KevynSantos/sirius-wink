@@ -11,7 +11,13 @@ cd C:\workspace\sirius-wink
 docker compose up -d --build
 ```
 
-Abra **http://localhost:8080**. A porta é publicada apenas no computador local (127.0.0.1).
+Abra **http://localhost:8080** neste computador ou **http://192.168.69.129:8080** em outro dispositivo da mesma rede local. O Docker publica a porta no loopback e no IP de rede configurado em `LAN_IP` (padrão `192.168.69.129`). Se o IP do computador mudar, atualize `LAN_IP` no `.env` e execute `docker compose up -d`.
+
+Se o Windows bloquear o acesso de outros dispositivos, execute uma vez em um PowerShell **como administrador**. Esta regra permite somente conexões da sub-rede local para o IP indicado:
+
+```powershell
+New-NetFirewallRule -Name 'SiriusWink-8080-LAN' -DisplayName 'Sirius Wink - HTTP rede local 8080' -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8080 -LocalAddress 192.168.69.129 -RemoteAddress LocalSubnet -Profile Any
+```
 
 ### Acesso inicial de desenvolvimento
 
@@ -96,4 +102,4 @@ powershell -ExecutionPolicy Bypass -File tests/docker.ps1
 
 Os testes exigem o Docker iniciado e usam as credenciais locais padrão (ou `TEST_ADMIN_EMAIL` e `TEST_ADMIN_PASSWORD`). **Execute em uma instância de desenvolvimento descartável.** Criam usuários de teste, horas e um feriado, verificam permissões, isolamento, conflitos, exceções, períodos, exportação e desativação. Os lançamentos e o feriado são removidos ao final; usuários de teste ficam inativos e a auditoria é preservada. `TEST_URL` permite apontar para outra instância.
 
-Para servir pela rede ou em produção, configure HTTPS, `COOKIE_SECURE=1`, credenciais próprias, backups e uma estratégia de recuperação. A configuração fornecida é para desenvolvimento local. SQLite facilita a operação em uma instância; avalie PostgreSQL se houver múltiplas réplicas ou alto volume de escritas.
+O acesso HTTP pela rede local é destinado a testes. No Windows, o firewall deve permitir TCP na porta 8080 para a sub-rede local. Para produção, configure HTTPS, `COOKIE_SECURE=1`, credenciais próprias, backups e uma estratégia de recuperação. Ative cookies seguros somente ao usar HTTPS. SQLite facilita a operação em uma instância; avalie PostgreSQL se houver múltiplas réplicas ou alto volume de escritas.
